@@ -1,0 +1,87 @@
+
+select * from lol where id = 0;
+select * from lol where id = 200;
+
+select * from lol where id = 467;
+select * from lol where id = 999;
+
+select * from lol where id = 2;
+select * from lol where id = 877;
+
+select * from lol where id = 1000;
+select * from lol where id = 319;
+
+select * from lol where id = 515;
+select * from lol where id = 641;
+
+select * from lol where id = 728;
+select * from lol where id = 845;
+
+select * from lol where id = 23;
+select * from lol where id = 69;
+
+select * from lol where id = 2133;
+select * from lol where id = 1337;
+
+select * from lol where id = 8532;
+select * from lol where id = 9999;
+
+select * from lol where id = 0;
+select * from lol where id = 7123;
+
+select * from lol where id = 1980;
+select * from lol where id = 1992;
+
+select * from lol where id = 3219;
+select * from lol where id = 4444;
+
+select * from lol where id = 5142;
+select * from lol where id = 5800;
+
+select * from lol where id = 6120;
+select * from lol where id = 6900;
+
+select * from lol where id = 8080;
+select * from lol where id = 5145;
+
+select * from lol where id = 9374;
+select * from lol where id = 4545;
+
+select * from lol where id = 1234;
+select * from lol where id = 4321;
+
+select * from lol where id = 4;
+select * from lol where id = 6420;
+
+select * from lol where id = 1;
+select * from lol where id = 9020;
+
+select * from lol where id = 3133;
+select * from lol where id = 4789;
+
+select * from lol where id = 5400;
+select * from lol where id = 6400;
+
+#select * from Me where IdMe = 0;
+#select * from Me where IdMe = 200;
+
+#select * from Me where IdMe = 467;
+#select * from Me where IdMe = 999;
+
+#select * from Me where IdMe = 2;
+#select * from Me where IdMe = 877;
+
+#select * from Me where IdMe = 1000;
+#select * from Me where IdMe = 319;
+
+#select * from Me where IdMe = 515;
+#select * from Me where IdMe = 641;
+
+#select * from Me where IdMe = 728;
+#select * from Me where IdMe = 845;
+
+#select * from Me where IdMe = 23;
+#select * from Me where IdMe = 69;
+
+
+quit
