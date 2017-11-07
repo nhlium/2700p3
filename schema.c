@@ -1090,16 +1090,16 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
   //schema_p sch_r = copy_schema(right->sch,"joinSchemaRight");     // Get a copy of the schema for right table    
   //Copy_schema makes a new schema netry in the databases. Should we do this?. Each join will create new schemas and increase the DB size
   
-  /*  This is for the nested-loop join. 
+   /* This is for the nested-loop join. 
   for(){
     for(){
 
     }
   }
-
-  OR duo while loop?
-  int once = 0;
-  while(left->first != NULL){
+*/
+  //OR duo while loop?
+  int once = 0;       
+  /*while(left->first != NULL){
     while(right->first != NULL){
       //Add field and values to the copied schema 
       
@@ -1124,21 +1124,46 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
       right->first = right->first->next;    //Get next field desc
     }    
     left->first = left->first->next;        // Get next field desc
+  }*/
+
+
+  //add_field ( schema_p s, field_desc_p f )
+  
+
+  //Test..... For every field_f, check if same field 
+  int possible = 0;               //If the join can be done 
+  while(sch_l->first != NULL){
+    while(right->sch->first != NULL){
+      if(strcmp(sch_l->first->name,right->sch->first->name) == 0 && sch_l->first->type == right->sch->first->type && sch_l->first->type == INT_TYPE){   //We have a matching field type and name 
+        //Only support join on integer field
+        possible = 1;
+        put_msg(DEBUG,"Join is possible!\n");
+        
+        //Add values? 
+        
+      }else{          // Not a match, but add field to copyschema
+        field_desc_p desc = copy_field(right->sch->first);
+        add_field(sch_l,desc);
+        
+      }
+      right->sch->first = right->sch->first->next;    //Advance inner loop
+      break;
+    }
+    sch_l->first = sch_l->first->next;      //Advance outer loop 
   }
 
 
-  add_field ( schema_p s, field_desc_p f )
-  */
 
   while(sch_l->first != NULL){
-    if(sch->first->type == 0){
-      put_msg(DEBUG, "Fieldname: %s, FieldType: Int\n",sch->first->name);
-    }else if(sch->first->type == 1){
-      put_msg(DEBUG, "Fieldname: %s, FieldType: String\n",sch->first->name);
+    if(sch_l->first->type == 0){
+      put_msg(DEBUG, "Fieldname: %s, FieldType: Int\n",sch_l->first->name);
+    }else if(sch_l->first->type == 1){
+      put_msg(DEBUG, "Fieldname: %s, FieldType: String\n",sch_l->first->name);
     }
-    sch->first = sch->first->next;
+    sch_l->first = sch_l->first->next;
   }
   
   
   return NULL;
 }
+    
