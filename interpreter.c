@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 static const char* t_database = "database";
 static const char* t_show = "show";
@@ -451,7 +452,7 @@ static select_desc* parse_select ()
 }
 
 static void select_rows ()
-{
+{ 
   select_desc *slct = parse_select ();
   tbl_p where_tbl = NULL, res_tbl = NULL, join_tbl = NULL;
 
@@ -459,7 +460,8 @@ static void select_rows ()
 
   if ( slct->right_tbl != NULL)
     {
-      join_tbl = table_natural_join (slct->from_tbl, slct->right_tbl);
+      
+      join_tbl = table_natural_join (slct->from_tbl, slct->right_tbl);      
       if ( join_tbl == NULL) { release_select_desc (slct); return; }
     }
   
@@ -530,7 +532,7 @@ void test_gen(schema_p s, record *r, int n){
   for( i = 0; i < n; i++){
     r[i] = new_record(s);
     fill_test_record(s,r[i],i);
-    put_record_info(DEBUG,r[i],s);
+    //put_record_info(DEBUG,r[i],s);
     append_record(r[i],s);
   }
 }
@@ -549,9 +551,13 @@ void interpret ( int argc, char* argv[] )
 
   if(gen_data){
     record b[10000];
-    schema_p s = test_schema("lol");
+    schema_p s = test_schema("left");
+    test_gen(s,b,10000);
+    b[10000];
+    s = test_schema("right");
     test_gen(s,b,10000);
   }
+
 	
   while (!feof(in_s))
     {

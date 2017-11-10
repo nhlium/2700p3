@@ -8,6 +8,7 @@
 #include "pmsg.h"
 #include <string.h>
 
+
 /** @brief Field descriptor */
 typedef struct field_desc_struct {
   char *name;        /**< field name */
@@ -808,13 +809,8 @@ void table_display ( tbl_p t )
 }
 
 int binary_search_int(tbl_p t, int val_to_find, record rec){
-  //page_p ok = pages[0];
-  //put_msg(DEBUG, "Numb blocks %d\n",file_num_blocks(t->sch->name));
-  //put_msg(DEBUG, "PAGES[0]");
 
-  //put_page_info(DEBUG,ok);
-  //return 0;
-  put_msg(DEBUG, "IN BINARY SEARCH\n");
+  put_msg(DEBUG, "IN BINARY SEARCH\n");                        
   put_msg(DEBUG, " Num records: %d\n",t->num_records);        // Number of records in the table 
 
   schema_p s = t->sch;                                        // Fetch schema 
@@ -843,7 +839,7 @@ int binary_search_int(tbl_p t, int val_to_find, record rec){
   int same_page_search_count = 0;     // If this is bigger than 1 we are reading the same page over and over, which means the value is not in the database.
   
   while(!found){
-    //page_p pg = get_page(s->name,page_to_search);             // Fetch the page we want to search through 
+    // Fetch the page we want to search through 
     page_p pg = get_page(s->name,page_to_search);
     last_searched_page = page_to_search;
     put_msg(DEBUG, "Page pos: %d\n",page_current_pos(pg));
@@ -852,7 +848,7 @@ int binary_search_int(tbl_p t, int val_to_find, record rec){
     page_set_current_pos(pg,PAGE_HEADER_SIZE);              // Set position to beginning of the page, which is right after the header data, 20
     pos = page_current_pos(pg);                             // Fetch the current position 
     
-    //while(pos != 500){                                      // Search through the page until the entire page has been read. 
+                                                             // Search through the page until the entire page has been read. 
       while(eop(pg) != 1){
       pos = page_current_pos(pg);                           // Fetch position again 
       if(pos == 500){                                       // If we have read all records in page
@@ -886,14 +882,14 @@ int binary_search_int(tbl_p t, int val_to_find, record rec){
         put_msg(DEBUG, "Serach_page: %d\n",search_page);        
         put_msg(DEBUG, "PAGE TO SEARCH: %d\n",page_to_search);
       }else if(val_to_find < value){                          // If the value we want is smaller than the last value of the page we searched, it means that the value is in a lower page. 
-        //int pages_left = num_pages - page_to_search - 1;      // Do the same as above, we calculate which page we want to search through. 
+        // Do the same as above, we calculate which page we want to search through. 
         int pages_left = page_to_search - 1;
         int search_page = (pages_left + (2-1)) / 2;
         num_pages = pages_left;
         put_msg(DEBUG, "Pages left: %d\n",pages_left);
         put_msg(DEBUG, "Serach_page: %d\n",search_page);
         put_msg(DEBUG, "PRE page_to_search %d\n",page_to_search);
-        //page_to_search = page_to_search - search_page; // This might be wrong 
+        
         page_to_search = search_page;
         put_msg(DEBUG, "page_to_search %d\n",page_to_search);
         if(page_to_search < 0){                               // If for some reason the calculation bugs out and sets a negative page number, we simply set the page to page 0. 
@@ -992,6 +988,7 @@ int find_record_all(record rec, schema_p s, int offset, int val, const char* op)
 
 tbl_p table_search (tbl_p t, char *attr, char *op, int val)
 {
+  
   if (t == NULL) return NULL;
 
   int search_binary = 1;  // Set to 0 for linear search or 1 for binary search on equality = 
@@ -1043,16 +1040,11 @@ tbl_p table_search (tbl_p t, char *attr, char *op, int val)
       { 
         put_page_info(DEBUG, t->current_pg);
         put_record_info (DEBUG, rec, s);
-        append_record ( rec, res_sch );
-        //put_pager_profiler_info(DEBUG);
+        append_record ( rec, res_sch );        
       }
       
     }
   }
-
-
-  
-
   release_record (rec, s);
 
   return res_sch->tbl;
@@ -1083,87 +1075,128 @@ tbl_p table_project ( tbl_p t, const char *dest_name,
 
 tbl_p table_natural_join (tbl_p left, tbl_p right)
 {
-  //Need to check for similarities between left and right.
-  //We can assume only 1 field will match, and its an Int type.
-  //check field name + field type
-  schema_p sch_l = copy_schema(left->sch,"joinSchemaLeft");       // Get a copy of the schema for left table
-  //schema_p sch_r = copy_schema(right->sch,"joinSchemaRight");     // Get a copy of the schema for right table    
-  //Copy_schema makes a new schema netry in the databases. Should we do this?. Each join will create new schemas and increase the DB size
   
-   /* This is for the nested-loop join. 
-  for(){
-    for(){
+  schema_p sch_l = copy_schema(left->sch,"copySchema");       // Get a copy of the schema for left table
+  int canJoin = 0;
+  int nestedLoop = 1;
+   // This is for the nested-loop join.  
+  field_desc_p descR = right->sch->first;
+  field_desc_p descL = left->sch->first;
 
+  if(nestedLoop){
+    while(descL != NULL){
+      while(descR != NULL){      
+      //Assume only one field match our other field. Int type
+        if(descL->type == descR->type && descL->type == INT_TYPE && strcmp(descL->name,descR->name) == 0){  // Dont add duplicate fields
+        canJoin = 1; 
+        }
+        else if(canJoin){
+          add_field(sch_l,copy_field(descR));
+        }
+        descR = descR->next;     
+      } 
+    if(canJoin)break;
+
+    descL = descL->next;
+    }
+  }else{
+    while(1){
+      while(1){
+        while(1){
+          while(1){
+            //If same type and name
+            //canJoin = 1;
+           // pretty much the same as the one above at this part.
+          }
+        }
+      }
+    }
+  }
+  
+
+  
+  left->current_pg = get_page(left->sch->name,0);
+  int a = page_block_nr(left->current_pg);
+  put_msg(DEBUG,"blocknr: %d\n",a);
+  put_page_info(DEBUG,left->current_pg);
+  int blocks = file_num_blocks(left->sch->name);
+  put_msg(DEBUG,"Number of blocks: %d\n",blocks);
+
+
+  //Block nested loop join
+  /*
+  while(Block left){
+    while(Block right){
+      while(field left){
+        while(field right){
+          //If same type and name
+          canJoin = 1;
+          pretty much the same as the one above at this part.
+        }
+      }
     }
   }
 */
-  //OR duo while loop?
-  int once = 0;       
-  /*while(left->first != NULL){
-    while(right->first != NULL){
-      //Add field and values to the copied schema 
-      
-      if(left->first->name == right->first->name && left->first->type == right->first->type){ //We found a field of same type and name. 
-          //Add value to new copied schema. No duplicate values
-      }else if(once == 0){ //Maybe make a function to do this. //Added the once part to avoid doing this more than once// This will add every field and record from right to our new schema. Will be done on first iteration, shouldnt need to do this again..
-          //Add field and values
-        //add_field(sch_l,right->first);      //Copy field
-        field_desc_p desc = copy_field(right->first);
-        add_field(sch_l,desc);               //add field 
-        record r = new_record(sch_l);         // Get a new record
-        int rec = get_record(r,right->sch);   //get jointable's record 
-        if(!rec){
-          put_msg(DEBUG, "Error fetching record!\n");
+
+
+    
+   
+    if(canJoin){      
+      set_tbl_position(left,TBL_BEG);
+      set_tbl_position(sch_l->tbl,TBL_BEG);
+      set_tbl_position(right,TBL_BEG);
+
+      record rSch = new_record(sch_l);
+      record rLeft = new_record(left->sch);
+      record rRight = new_record(right->sch);
+
+      field_desc_p f = sch_l->first;
+      field_desc_p lField = left->sch->first;
+      field_desc_p rField = right->sch->first;
+
+      int i = 0;
+      int valid = 0;                                                // Valid record flag 
+      int j = 1;                                                    // Right record iterator
+      while(get_record(rLeft,left->sch)){                           // For every record in left,        
+        while(get_record(rRight,right->sch)){                       // Search for matching record in commmon field of right
+          if(*(int*)rLeft[0] == *(int*)rRight[0]){                  // This implementation assumes that the common field is always at the first index in the record.  
+            valid = 1;                                              // Set valid flag
+            while(f != NULL){                                       // Loop through the fields
+              if(is_int_field(f)){                                  // Test the field type 
+                if(i < left->sch->num_fields){                      // If we haven't iterated through the whole left record yet 
+                  assign_int_field(rSch[i], *(int*)rLeft[i]);       // Set data from left record 
+                }else{                                              // We have iterated through the whole left record
+                  assign_int_field(rSch[i], *(int*)rRight[j]);      // Set data from right record 
+                  j++;                                              // Increase iterator for right record
+                }                
+              }else{                                                // String field type 
+                if(i < left->sch->num_fields){                      // If we haven't iterated through the whole left record yet 
+                  assign_str_field(rSch[i], (char*)rLeft[i]);       // Set data from left record 
+                }else{                                              // We have iterated through the whole left record
+                  assign_str_field(rSch[i], (char*)rRight[j]);      // Set data from right record 
+                  j++;                                              // Increase iterator for right record
+                }
+              }
+              i++;                                                  // Increase iterator
+              f = f->next;                                          // Fetch next field 
+            }
+            f = sch_l->first;                                       // We have done all we need with this record, reset the field iterator
+            break;                                                  // Done reading and writing record, fetch a new one 
+          }
         }
-        rec = put_record(r,sch_l);            // Insert record into our new schema, might only need to do this once, at the end. 
-        if(rec < 0){
-          put_msg(DEBUG, "Error putting record!\n");
+        if(valid){                                                  // Valid is set if we wrote a record
+          append_record(rSch,sch_l);                                // Append record to copySchema
         }
-      }      
-      once = 1;
-      right->first = right->first->next;    //Get next field desc
-    }    
-    left->first = left->first->next;        // Get next field desc
-  }*/
-
-
-  //add_field ( schema_p s, field_desc_p f )
-  
-
-  //Test..... For every field_f, check if same field 
-  int possible = 0;               //If the join can be done 
-  while(sch_l->first != NULL){
-    while(right->sch->first != NULL){
-      if(strcmp(sch_l->first->name,right->sch->first->name) == 0 && sch_l->first->type == right->sch->first->type && sch_l->first->type == INT_TYPE){   //We have a matching field type and name 
-        //Only support join on integer field
-        possible = 1;
-        put_msg(DEBUG,"Join is possible!\n");
-        
-        //Add values? 
-        
-      }else{          // Not a match, but add field to copyschema
-        field_desc_p desc = copy_field(right->sch->first);
-        add_field(sch_l,desc);
-        
+        set_tbl_position(right,TBL_BEG);                            // Reset the right table to start position
+        i = 0;                                                      // Reset left record iterator
+        j = 1;                                                      // Reset right record iterator
       }
-      right->sch->first = right->sch->first->next;    //Advance inner loop
-      break;
+    }else{
+      remove_schema(sch_l);
+      return NULL;
     }
-    sch_l->first = sch_l->first->next;      //Advance outer loop 
-  }
 
 
-
-  while(sch_l->first != NULL){
-    if(sch_l->first->type == 0){
-      put_msg(DEBUG, "Fieldname: %s, FieldType: Int\n",sch_l->first->name);
-    }else if(sch_l->first->type == 1){
-      put_msg(DEBUG, "Fieldname: %s, FieldType: String\n",sch_l->first->name);
-    }
-    sch_l->first = sch_l->first->next;
-  }
-  
-  
-  return NULL;
+  return sch_l->tbl;
 }
     
