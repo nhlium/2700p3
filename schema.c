@@ -1100,13 +1100,13 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
     descL = descL->next;
     }
   }else{
-    while(1){
-      while(1){
-        while(1){
-          while(1){
+    while(1){         // Fetch block 
+      while(1){       // Fetch block 
+        while(1){     // 
+          while(1){   // 
             //If same type and name
             //canJoin = 1;
-           // pretty much the same as the one above at this part.
+           // pretty much the same as the nested-loop join above.
           }
         }
       }
@@ -1114,14 +1114,27 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
   }
   
 
-  
-  left->current_pg = get_page(left->sch->name,0);
+  set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
+      
+set_tbl_position(right,TBL_BEG); 
+  left->current_pg = get_page(left->sch->name,1);
+  right->current_pg = get_page(right->sch->name,0);
   int a = page_block_nr(left->current_pg);
-  put_msg(DEBUG,"blocknr: %d\n",a);
+  int b = page_block_nr(right->current_pg);
+  put_msg(DEBUG,"blocknr left: %d\n",a);
+  put_msg(DEBUG,"blocknr right: %d\n",b);
   put_page_info(DEBUG,left->current_pg);
-  int blocks = file_num_blocks(left->sch->name);
-  put_msg(DEBUG,"Number of blocks: %d\n",blocks);
+  put_page_info(DEBUG,right->current_pg);
+  int blocksL = file_num_blocks(left->sch->name);
+  int blocksR = file_num_blocks(right->sch->name);
+  put_msg(DEBUG,"Number of blocks left : %d\n",blocksL);
+  put_msg(DEBUG,"Number of blocks right: %d\n",blocksR);
+  //int lol = page_get_int(left->current_pg);
+  //put_msg(DEBUG,"LEFT INT: %d\n",lol);
 
+set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
+      
+set_tbl_position(right,TBL_BEG); 
 
   //Block nested loop join
   /*
@@ -1142,17 +1155,17 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
     
    
     if(canJoin){      
-      set_tbl_position(left,TBL_BEG);
+      set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
       set_tbl_position(sch_l->tbl,TBL_BEG);
-      set_tbl_position(right,TBL_BEG);
+      set_tbl_position(right,TBL_BEG);                              
 
-      record rSch = new_record(sch_l);
-      record rLeft = new_record(left->sch);
-      record rRight = new_record(right->sch);
+      record rSch = new_record(sch_l);                              // Prepare a new record for the copy schema 
+      record rLeft = new_record(left->sch);                         // Prepare a new record for left schema 
+      record rRight = new_record(right->sch);                       // Prepare a new record for right schema
 
-      field_desc_p f = sch_l->first;
-      field_desc_p lField = left->sch->first;
-      field_desc_p rField = right->sch->first;
+      field_desc_p f = sch_l->first;                                // Field descriptor for the new schema 
+      field_desc_p lField = left->sch->first;                       // Fetch first field descriptor from left 
+      field_desc_p rField = right->sch->first;                      // Fetch first field descriptor from right 
 
       int i = 0;
       int valid = 0;                                                // Valid record flag 
@@ -1191,12 +1204,12 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
         i = 0;                                                      // Reset left record iterator
         j = 1;                                                      // Reset right record iterator
       }
-    }else{
-      remove_schema(sch_l);
-      return NULL;
+    }else{                                                          // Unable to join the two schemas 
+      remove_schema(sch_l);                                         // Delete copy schema 
+      return NULL;                                                  // Return null 
     }
 
 
-  return sch_l->tbl;
+  return sch_l->tbl;                                                // Return table if joinable and successfull 
 }
     
