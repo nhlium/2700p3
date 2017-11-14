@@ -1103,9 +1103,9 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
     int k,l;
     for(k = 0; k < file_num_blocks(left->sch); k++){         // There are file_num_blocks number of blocks in a given schema. 
       left->current_pg = get_page(left->sch->name,k);        // Fetch left block
-      for(l = 0; l < file_num_blocks(right->sch); l++){    // There are file_num_blocks number of blocks in a given schema.
+      for(l = 0; l < file_num_blocks(right->sch); l++){      // There are file_num_blocks number of blocks in a given schema.
         right->current_pg = get_page(right->sch->name,l);    // Fetch right block
-        while(1){     // 
+        while(1){                    // Need to fetch  
           while(1){   // 
             //If same type and name
             //canJoin = 1;
@@ -1120,7 +1120,7 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
   set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
       
 set_tbl_position(right,TBL_BEG); 
-  left->current_pg = get_page(left->sch->name,4);
+  left->current_pg = get_page(left->sch->name,0);
   right->current_pg = get_page(right->sch->name,0);
   int a = page_block_nr(left->current_pg);
   int b = page_block_nr(right->current_pg);
