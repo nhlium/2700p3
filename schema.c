@@ -1103,7 +1103,7 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
     int k,l;
     for(k = 0; k < file_num_blocks(left->sch); k++){         // There are file_num_blocks number of blocks in a given schema. 
       left->current_pg = get_page(left->sch->name,k);        // Fetch left block
-      while(l = 0; l < file_num_blocks(right->sch); l++){    // There are file_num_blocks number of blocks in a given schema.
+      for(l = 0; l < file_num_blocks(right->sch); l++){    // There are file_num_blocks number of blocks in a given schema.
         right->current_pg = get_page(right->sch->name,l);    // Fetch right block
         while(1){     // 
           while(1){   // 

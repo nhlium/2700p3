@@ -550,12 +550,12 @@ void interpret ( int argc, char* argv[] )
   int gen_data = 1; // Flip this to create a table "lol" with 10.000 records
 
   if(gen_data){
-    record b[10000];
+    record b[5000];
     schema_p s = test_schema("left");
-    test_gen(s,b,10000);
-    b[10000];
+    test_gen(s,b,5000);
+    b[5000];
     s = test_schema("right");
-    test_gen(s,b,10000);
+    test_gen(s,b,5000);
   }
 
 	
