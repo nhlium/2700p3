@@ -1100,8 +1100,11 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
     descL = descL->next;
     }
   }else{
-    while(1){         // Fetch block 
-      while(1){       // Fetch block 
+    int k,l;
+    for(k = 0; k < file_num_blocks(left->sch); k++){         // There are file_num_blocks number of blocks in a given schema. 
+      left->current_pg = get_page(left->sch->name,k);        // Fetch left block
+      while(l = 0; l < file_num_blocks(right->sch); l++){    // There are file_num_blocks number of blocks in a given schema.
+        right->current_pg = get_page(right->sch->name,l);    // Fetch right block
         while(1){     // 
           while(1){   // 
             //If same type and name
@@ -1117,7 +1120,7 @@ tbl_p table_natural_join (tbl_p left, tbl_p right)
   set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
       
 set_tbl_position(right,TBL_BEG); 
-  left->current_pg = get_page(left->sch->name,1);
+  left->current_pg = get_page(left->sch->name,4);
   right->current_pg = get_page(right->sch->name,0);
   int a = page_block_nr(left->current_pg);
   int b = page_block_nr(right->current_pg);
@@ -1129,8 +1132,11 @@ set_tbl_position(right,TBL_BEG);
   int blocksR = file_num_blocks(right->sch->name);
   put_msg(DEBUG,"Number of blocks left : %d\n",blocksL);
   put_msg(DEBUG,"Number of blocks right: %d\n",blocksR);
-  //int lol = page_get_int(left->current_pg);
-  //put_msg(DEBUG,"LEFT INT: %d\n",lol);
+  int lol = page_get_int(right->current_pg);
+  put_msg(DEBUG,"Right INT: %d\n",lol);
+ 
+  
+
 
 set_tbl_position(left,TBL_BEG);                               // Set table position to beginning for all three tables
       
